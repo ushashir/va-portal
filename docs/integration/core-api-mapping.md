@@ -31,6 +31,14 @@ Both UAT and prod environments currently expose #9, #10, and #11 only via intern
 or partial paths — see the UAT-hosts question in
 [open questions for Ecobank](../process/open-questions.md#questions-for-ecobank).
 
+**Confirmed: no GET merchant(s) endpoint.** Checked against both source specs
+(test/UAT v1 and prod v1) on 2026-10-12 — there is no endpoint to fetch a merchant /
+service provider record. #2 ("Create merchant") exists only as a payload sample and
+is explicitly "done by Ecobank" manually; there is no corresponding get/fetch call.
+Tracked as the missing **M-2** capability in
+[core API requirements — MVP](core-api-requirements-mvp.md) and as a core gap in
+[core gaps](core-gaps.md).
+
 ## Payload inconsistencies the core client must normalize
 
 These are quirks observed directly in the Ecobank sample payloads. The client hides

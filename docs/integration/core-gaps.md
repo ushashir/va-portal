@@ -8,7 +8,7 @@ the corresponding questions are consolidated in
 | Gap | Why the portal needs it | Interim workaround |
 |---|---|---|
 | Create / update / deactivate merchant (service provider) API | Self-serve onboarding and admin deactivate | Portal runs the workflow; Ecobank ops provisions manually and admin enters `serviceProviderId` |
-| Get merchant (service provider) details | Show settlement account, status, amount rules | Store what was submitted at onboarding |
+| Get merchant (service provider) details — **confirmed absent**, checked against both specs 2026-10-12 | Show settlement account, status, amount rules | Store what was submitted at onboarding |
 | Create new VA on demand (static or dynamic) for a merchant | "Generate virtual account" button | Use create-order for dynamic; static only from the pre-allocated pool via assign-static |
 | Pool / settlement account details, name enquiry, balance | Pool account card, domiciliary name check | Show stored details; no balance (decided — see [decisions](../process/open-questions.md#product-decisions) — not just a core-API gap) |
 | Pool account statement across all VAs | Union of stored VA transactions | Mirror in `virtual_account`, updated on each portal action |
