@@ -1,71 +1,54 @@
-# Core API requirements — MVP only
+# Core API request — MVP
 
-What the core API team needs to deliver so the MVP dashboard can ship. Everything
-here is **P1 — blocks MVP**. P2 items (needed before go-live, not before MVP) are
-listed at the bottom with no detail; full detail on both is in
-[core gaps](core-gaps.md) and [core API mapping](core-api-mapping.md).
+What VA Portal needs from the core API to ship the MVP dashboard, what's already
+provided, and what we'd ask for on top of that. Everything below is needed for MVP;
+P2 items (needed before go-live, not before MVP) are listed at the bottom with no
+detail.
 
-13 P1 items: 2 already work, 5 need a fix, 6 don't exist yet.
+Full background: [core gaps](core-gaps.md) and [core API mapping](core-api-mapping.md).
 
-## Already works — no action needed
+| # | VA Portal needs | Provided? | What's provided | Request |
+|---|---|---|---|---|
+| 1 | Authenticate every core call | ✅ Yes | `POST /auth-service/oauth/token` | — |
+| 2 | Generate a dynamic VA / collection order | ✅ Yes | `POST /virtual-account/api/v2/create-order` | — |
+| 3 | List a merchant's VAs with status, type, outlet, expiry, and a total count | ⚠️ Partial | `POST /virtual-account/api/v2/fetch/virtual-account` — returns only VA number and name, no count, UAT on a private IP | Add `status`, `type`, `displayName`, `createdDate`, `expiryDate`, `currency`, `totalRecords`; expose on a public host |
+| 4 | Paginated transaction history per VA | ⚠️ Partial | Endpoint exists; prod path incomplete, UAT on a private IP, no paging | Publish the full prod path and a public UAT host; add paging |
+| 5 | Real-time payment notification with amount, currency, date, and status | ⚠️ Partial | Webhook fires on payment but carries none of those fields | Add `amount`, `currency`, `transactionDate`, `transactionStatus`; sign the call; document the retry schedule |
+| 6 | Full set of transaction status values, with currency | ⚠️ Partial | `POST /virtual-transaction-status/api/v2/trans-status` — only `TRANS_IN_PROGRESS` / `TRANS_COMPLETED` documented, no currency | Publish every `transactionStatus` value (expired, failed, reversed, etc.); add `currency` |
+| 7 | One unambiguous final status per transaction reference | ⚠️ Partial | `POST /virtual-account/api/v2/get/virtual-account-transaction-status` — status + code need interpretation together (e.g. `TRANS_COMPLETED` + code 120 = invalid amount) | A single final-outcome field (e.g. `SUCCESSFUL`/`FAILED`/`REVERSED`); standard `headerInfo`; amounts as numbers |
+| 8 | Create / update a merchant (service provider) | ❌ No | — | New API — or confirm this stays manual, with expected turnaround and how we receive `serviceProviderId` |
+| 9 | Get a merchant's details | ❌ No | — | New API — confirm provisioning, show settlement account |
+| 10 | Generate a VA on demand | ❌ No | — | New API for the "generate virtual account" button |
+| 11 | Get a single VA's details | ❌ No | — | New API — refresh one VA without paging the whole list |
+| 12 | Pool account details | ❌ No | — | New API — the pool account card needs something to read |
+| 13 | Merchant-wide transaction list (all VAs, one call) | ❌ No | — | New API — one call per merchant per date range, instead of one call per VA |
 
-| # | Capability | Endpoint |
-|---|---|---|
-| P-1 | Access token | `POST /auth-service/oauth/token` |
-| P-2 | Create order (dynamic VA) | `POST /virtual-account/api/v2/create-order` |
+2 fully provided, 5 provided but partial, 6 not provided at all.
 
-## Needs a fix
+## A couple of observations (not requests)
 
-| # | Capability | What's broken | What to fix |
-|---|---|---|---|
-| E-1 | Fetch VAs for a merchant | Returns only number + name, no count, UAT on a private IP | Add `status`, `type`, `displayName`, `createdDate`, `expiryDate`, `currency`, `totalRecords`; put it on a public host |
-| E-2 | Transaction history per VA | Prod path incomplete, UAT on a private IP, not paginated | Publish the real path + public UAT host; add paging |
-| E-3 | Payment webhook | No amount/currency/date/status in the payload, unsigned, no retry policy | Add `amount`, `currency`, `transactionDate`, `transactionStatus`; sign with HMAC; document retries |
-| E-4 | Transaction status by order | Only 2 of N status values documented, no currency | Publish every `transactionStatus` value (incl. expired/failed/reversed); add `currency` |
-| E-5 | VA transaction status by reference | No `headerInfo`, status alone is ambiguous (e.g. `TRANS_COMPLETED` + code 120 = invalid amount) | Standard `headerInfo`; one unambiguous final status; amounts as numbers |
+Noticed while building against what's already there — not asking for anything to
+change, just flagging in case it's useful:
 
-## Doesn't exist yet
+- The spec describes all payloads as AES-GCM encrypted; most samples we've worked
+  from are plain JSON. We're building the client to handle either — a confirmation
+  of which endpoints expect encrypted bodies would save us some guesswork.
+- Row 3's endpoint has a sibling, "fetch all VA," that looks similar — we're not
+  sure what distinguishes the two, or whether either already returns the fields
+  we're asking for above.
 
-| # | Capability | Why MVP needs it |
-|---|---|---|
-| M-1 | Create/update merchant | No self-serve onboarding without it |
-| M-2 | Get merchant details | Confirm provisioning, show settlement account |
-| M-3 | Generate VA on demand | The "generate virtual account" button has nothing to call |
-| M-4 | Get single VA details | VA detail page / single refresh without paging the whole list |
-| M-5 | Pool account details | The pool account card has nothing to show without it |
-| M-6 | Merchant-wide transaction list | One call across all VAs instead of 22 calls per merchant per date range |
+## What would help us plan
 
-## The 2 questions that matter most right now
+1. Row 8 (merchant API) — will it be exposed, or does onboarding stay manual?
+2. Which rows above you'd take on first, and roughly when.
 
-1. **M-1**: will merchant creation become an API, or does it stay manual? If manual,
-   what's the turnaround and how do we get `serviceProviderId` back?
-2. Which of E-1 through M-6 ship first, and by what date?
-
-(M-5, pool balance, is no longer a product-blocking question — the dashboard won't
-show a balance regardless. It's optional now, only useful if core ever needs it for
-internal reconciliation.)
-
-(Full question list, including VA pre-allocation, retention, and UAT contacts: see
+(Fuller list, including multi-country credentials, rate limits, and retention:
 [open questions](../process/open-questions.md).)
-
-## Cross-cutting, still needed for these 13 to be usable
-
-- **Encryption scope** — confirm which endpoints actually need AES-GCM bodies (the
-  spec says all; the samples say otherwise).
-- **One header object** — `headerInfo` everywhere, not `hostHeaderInfo` or none.
-- **Full status/response code list** — `responseCode`, `transactionRespCode`,
-  `transactionStatus`, including reversal/expiry/duplicate.
-- **Consistent formats** — ISO 8601 dates, numeric amounts with currency, one
-  response wrapper shape.
-- **Public UAT hosts** — fetch-VA and transaction history are only reachable on a
-  private IP today; this blocks testing regardless of what else ships.
 
 ---
 
-## Deferred to go-live (P2 — not blocking MVP)
+## For later, not needed for MVP
 
-Block/unblock VA (P-3, already works), update VA name (E-6), assign static VA
-details (E-7), change merchant status (M-7), account name enquiry (M-8), transaction
-summary (M-9, optional if M-6 ships), health check (M-10) — plus the cross-cutting
-asks on multi-country credentials, rate limits/SLAs, and versioning notice. Full
-detail in [core gaps](core-gaps.md).
+Update VA name, assign static VA details, change merchant status, account name
+enquiry, a transaction summary endpoint (optional if row 13 covers it), and a
+health-check endpoint. Full detail in [core gaps](core-gaps.md).

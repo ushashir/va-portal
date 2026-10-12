@@ -35,9 +35,9 @@ engineering spec that implementation will follow.
   normalize.
 - [Core gaps](docs/integration/core-gaps.md) — what core does not expose today, the
   interim workaround for each, and the full list of questions for Ecobank.
-- [Core API requirements — MVP only](docs/integration/core-api-requirements-mvp.md) —
-  the short version of the above to hand to Ecobank's core API team: the 13 P1 items
-  that block MVP, nothing else.
+- [Core API request — MVP](docs/integration/core-api-requirements-mvp.md) — the
+  short version to hand to Ecobank's core API team: what we'd need added or built for
+  MVP, plus a few neutral observations, nothing else.
 
 ### Portal API
 - [API design](docs/api/api-design.md) — REST conventions, the response envelope, and
@@ -73,5 +73,5 @@ engineering spec that implementation will follow.
   two documents.
 - [Decisions and open questions](docs/process/open-questions.md) carries the
   resolved product decisions (pool balance, outlet history, approval SLA, retention)
-  and the 11 questions still open with Ecobank — most of the core-integration
-  defensive design exists because those 11 aren't answered yet.
+  and a table of what's still requested from Ecobank — most of the core-integration
+  defensive design exists because those requests aren't answered yet.

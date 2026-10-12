@@ -29,14 +29,14 @@ VAS Production Integration (prod, v1).
 
 Both UAT and prod environments currently expose #9, #10, and #11 only via internal IPs
 or partial paths — see the UAT-hosts question in
-[open questions for Ecobank](../process/open-questions.md#questions-for-ecobank).
+[open questions for Ecobank](../process/open-questions.md#requests-for-ecobank).
 
 **Confirmed: no GET merchant(s) endpoint.** Checked against both source specs
 (test/UAT v1 and prod v1) on 2026-10-12 — there is no endpoint to fetch a merchant /
 service provider record. #2 ("Create merchant") exists only as a payload sample and
 is explicitly "done by Ecobank" manually; there is no corresponding get/fetch call.
-Tracked as the missing **M-2** capability in
-[core API requirements — MVP](core-api-requirements-mvp.md) and as a core gap in
+Tracked as a "get merchant details" request in
+[core API request — MVP](core-api-requirements-mvp.md) and as a core gap in
 [core gaps](core-gaps.md).
 
 ## Payload inconsistencies the core client must normalize
@@ -62,7 +62,7 @@ portal ever sees a core quirk.
 - **Encryption is inconsistent with the spec text**: the spec states all payloads are
   AES-GCM encrypted, but every sample *except* transaction history (#11) is plain
   JSON. See the encryption-scope question in
-  [open questions for Ecobank](../process/open-questions.md#questions-for-ecobank) —
+  [open questions for Ecobank](../process/open-questions.md#requests-for-ecobank) —
   which endpoints actually require encryption is not yet confirmed; it's configured per-endpoint in the client
   until Ecobank confirms.
 

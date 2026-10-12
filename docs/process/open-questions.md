@@ -1,9 +1,11 @@
 # Decisions and open questions
 
-Three lists: product decisions now **resolved**, one deferred, and the API gaps still
-open with Ecobank's integration team. Several places elsewhere in this doc set
-previously said "provisional" or "proposed default" pending the resolved items below —
-those have been updated to reflect the decision; this page is the record of why.
+Product decisions now **resolved**, one **deferred**, a table of our open
+**requests** to Ecobank's core API team (what VA Portal needs, what's provided
+today, and what we're asking for), and one item that's a product/roadmap question
+rather than an API one. Several places elsewhere in this doc set previously said
+"provisional" or "proposed default" pending the resolved items below — those have
+been updated to reflect the decision; this page is the record of why.
 
 ## Product decisions
 
@@ -41,49 +43,30 @@ Resolved on 2026-10-12.
   ships with its existing email/in-app defaults; SMS opt-in/opt-out behavior is
   undefined until this comes back up.
 
-## Questions for Ecobank
+## Requests for Ecobank
 
-Still open — none of these were addressed by the product decisions above.
+What VA Portal needs from the core API team that it doesn't fully have yet. See
+[core API request — MVP](../integration/core-api-requirements-mvp.md) for the short
+version meant to be handed over directly — this is the fuller internal version, with
+links into the rest of the doc set.
 
-1. **Will a create / get / update merchant API be exposed, or does onboarding stay
-   manual?** The single biggest gap — see
-   [core gaps](../integration/core-gaps.md), row 1, and its effect on
-   [Sprint 6](delivery-plan.md#reading-this-plan-against-the-gaps).
-2. **How does a merchant get a new VA on demand, and how many are pre-allocated per
-   merchant?** Affects the "generate virtual account" flow — static VAs currently
-   assume a pre-allocated pool via assign-static (core endpoint #6).
-3. **Which endpoints actually require AES-GCM encrypted bodies?** The spec text says
-   all payloads are encrypted, but every sample except transaction history is plain
-   JSON — see
-   [core API mapping](../integration/core-api-mapping.md#payload-inconsistencies-the-core-client-must-normalize).
-4. **Full list of `transactionStatus` values and `transactionRespCode` meanings,
-   including reversals.** Blocks finishing the status mapper in
-   [data model](../architecture/data-model.md#va_transaction).
-5. **Can the webhook include amount, currency, transaction date, and an HMAC
-   signature? What is the retry policy?** Directly affects
-   [webhook security](../engineering/security.md#webhook), which currently relies on
-   a secret path segment plus mandatory requery as a stand-in.
-6. **Correct production path for transaction history, and public UAT hosts for
-   history and fetch VA.** Both are currently only reachable via internal IPs — see
-   [core API mapping](../integration/core-api-mapping.md#endpoint-map), endpoints
-   #9–#11. Blocks integration testing for VA sync and reconciliation regardless of
-   code readiness.
-7. **Difference between fetch VA and fetch all VA; can they return status, type,
-   created date, and total count?** See endpoint #9 vs. #10 in
-   [core API mapping](../integration/core-api-mapping.md).
-8. **Affiliate codes, base URLs, and credentials for Togo, Ghana, Benin, and other
-   launch countries.** Needed before `country_config` rows can exist for anything
-   beyond Nigeria (`ENG`) — see
-   [multi-country model](../product/overview.md#multi-country-model).
-9. **Rate limits, timeouts, and `requestId` uniqueness rules.** Governs the
-   Resilience4j defaults in
-   [observability](../engineering/observability-resilience.md#resilience), which are
-   currently conservative guesses.
-10. **One API credential for the platform, or one per merchant?** Affects token
-    caching and key management in
-    [security](../engineering/security.md#core-integration); the spec currently
-    assumes one platform credential per affiliate.
-11. **Scope and timing of the bank team view.** The source deck marks this "Next" —
-    see [product overview](../product/overview.md#who-uses-it). This spec designs the
-    admin APIs now (onboarding approval needs them) but leaves the bank-facing UI for
-    a later release.
+| VA Portal needs | Provided? | What's provided | Request |
+|---|---|---|---|
+| Create, update, and get a merchant (service provider) | ❌ No | — | Full API — or, if it stays manual, confirm turnaround time and how `serviceProviderId` gets back to us. The biggest item here — see [core gaps](../integration/core-gaps.md), row 1, and its effect on [Sprint 6](delivery-plan.md#reading-this-plan-against-the-gaps) |
+| Generate a VA on demand | ❌ No | — | New endpoint, plus clarity on how many VAs are pre-allocated per merchant today (static VAs currently assume a pre-allocated pool via assign-static, core endpoint #6) |
+| Reach transaction history and fetch VA on a real host | ⚠️ Partial | Both endpoints exist, but only on an internal IP; transaction history's production path is incomplete | Public UAT host for both, and the full production path for transaction history — blocks our integration testing regardless of code readiness. See [core API mapping](../integration/core-api-mapping.md#endpoint-map), endpoints #9–#11 |
+| A webhook payload with amount, currency, date, and status | ⚠️ Partial | Webhook fires on payment, but without those fields | Add the fields, a signature we can verify, and the retry schedule. Affects [webhook security](../engineering/security.md#webhook), which relies on a secret path segment plus mandatory requery as a stand-in today |
+| Full list of `transactionStatus` / `transactionRespCode` meanings | ⚠️ Partial | Only `TRANS_IN_PROGRESS` and `TRANS_COMPLETED` documented | Full list including reversals — needed to finish the status mapper in [data model](../architecture/data-model.md#va_transaction) |
+| Affiliate codes, base URLs, and credentials for other launch countries | ❌ No | Nigeria (`ENG`) only | Togo, Ghana, Benin, and others — needed before `country_config` rows can exist for them. See [multi-country model](../product/overview.md#multi-country-model) |
+| Rate limits, timeouts, and `requestId` uniqueness rules | ❓ Not documented | — | Governs the Resilience4j defaults in [observability](../engineering/observability-resilience.md#resilience), which are conservative guesses today |
+| Confirmation of the credential model | ❓ Not documented | — | One platform credential per affiliate, or one per merchant? We're assuming one per affiliate in [security](../engineering/security.md#core-integration) until confirmed |
+| Know which endpoints require AES-GCM encrypted bodies | ❓ Unclear | Spec says all payloads are encrypted; nearly every sample we've seen is plain JSON | Confirmation per endpoint — see [core API mapping](../integration/core-api-mapping.md#payload-inconsistencies-the-core-client-must-normalize) |
+| Understand fetch VA vs. fetch all VA | ❓ Unclear | Both exist and look similar | What distinguishes them, and whether either already returns `status`, `type`, `createdDate`, or a total count — see endpoint #9 vs. #10 in [core API mapping](../integration/core-api-mapping.md) |
+
+## Separately — not a core API question
+
+**Scope and timing of the bank team view.** The source deck marks this "Next" — see
+[product overview](../product/overview.md#who-uses-it). This is a product/roadmap
+decision for Ecobank's business side, not something for the API team. This spec
+designs the admin APIs now (onboarding approval needs them) but leaves the
+bank-facing UI itself for a later release.

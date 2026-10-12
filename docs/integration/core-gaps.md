@@ -3,7 +3,7 @@
 What Ecobank core does not expose today, why the portal needs it, and the interim
 workaround the portal uses in the meantime. This is the list to take back to Ecobank —
 the corresponding questions are consolidated in
-[open questions](../process/open-questions.md#questions-for-ecobank).
+[open questions](../process/open-questions.md#requests-for-ecobank).
 
 | Gap | Why the portal needs it | Interim workaround |
 |---|---|---|
