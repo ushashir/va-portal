@@ -11,7 +11,7 @@ Full background: [core gaps](core-gaps.md) and [core API mapping](core-api-mappi
 |---|---|---|---|---|
 | 1 | Authenticate every core call | ✅ Yes | `POST /auth-service/oauth/token` | — |
 | 2 | Generate a dynamic VA / collection order | ✅ Yes | `POST /virtual-account/api/v2/create-order` | — |
-| 3 | List a merchant's VAs with status, type, outlet, expiry, and a total count | ⚠️ Partial | `POST /virtual-account/api/v2/fetch/virtual-account` — returns only VA number and name, no count, UAT on a private IP | Add `status`, `type`, `displayName`, `createdDate`, `expiryDate`, `currency`, `totalRecords`; expose on a public host |
+| 3 | List one merchant's VAs with status, type, outlet, expiry, and a total count | ❓ Unconfirmed | `POST /virtual-account/api/v2/fetch/virtual-account` — documented as returning only VA number and name, no count. We can't confirm more: both UAT (private IP) and prod require a valid bearer token before any request body is validated, so we can't see what filters it actually accepts without real credentials | Share the request schema — specifically, does it take `serviceProviderId` to scope results to one merchant? Add `status`, `type`, `displayName`, `createdDate`, `expiryDate`, `currency`, `totalRecords` to the response; expose UAT on a public host |
 | 4 | Paginated transaction history per VA | ⚠️ Partial | Endpoint exists; prod path incomplete, UAT on a private IP, no paging | Publish the full prod path and a public UAT host; add paging |
 | 5 | Real-time payment notification with amount, currency, date, and status | ⚠️ Partial | Webhook fires on payment but carries none of those fields | Add `amount`, `currency`, `transactionDate`, `transactionStatus`; sign the call; document the retry schedule |
 | 6 | Full set of transaction status values, with currency | ⚠️ Partial | `POST /virtual-transaction-status/api/v2/trans-status` — only `TRANS_IN_PROGRESS` / `TRANS_COMPLETED` documented, no currency | Publish every `transactionStatus` value (expired, failed, reversed, etc.); add `currency` |
@@ -23,7 +23,8 @@ Full background: [core gaps](core-gaps.md) and [core API mapping](core-api-mappi
 | 12 | Pool account details | ❌ No | — | New API — the pool account card needs something to read |
 | 13 | Merchant-wide transaction list (all VAs, one call) | ❌ No | — | New API — one call per merchant per date range, instead of one call per VA |
 
-2 fully provided, 5 provided but partial, 6 not provided at all.
+2 fully provided, 1 whose request-side behavior we can't confirm without real
+credentials, 4 provided but incomplete, 6 not provided at all.
 
 ## A couple of observations (not requests)
 
