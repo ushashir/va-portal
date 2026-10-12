@@ -9,6 +9,11 @@
   see the single `Money` type in [coding standards](../engineering/coding-standards.md).
 - Timestamps are `TIMESTAMPTZ` in UTC; the UI converts using the merchant's country
   timezone (from `country_config`).
+- **No generic `deleted_at` / soft-delete column.** Rows that leave a lifecycle do so
+  through an explicit status value instead (`ARCHIVED`, `REVOKED`, `DEACTIVATED`,
+  etc.) — see each table below — with the transition itself recorded in
+  `activity_log`. A timestamp-only soft delete would duplicate what the status
+  column and the audit trail already capture, and loses the "why."
 - **Schema changes go through Flyway only.**
 
 ## Tables
@@ -37,8 +42,11 @@ Credentials are referenced **by secret name**, never stored in this table.
 | `notification_url` | |
 
 ### `merchant_invitation`
-`merchant_id`, `email`, `token_hash`, `invited_by`, `expires_at`, `accepted_at`.
-Token stored as SHA-256 hash; 72-hour expiry (proposed).
+`merchant_id`, `email`, `token_hash`, `invited_by`, `expires_at`, `accepted_at`,
+`status` (`PENDING`, `ACCEPTED`, `EXPIRED`, `REVOKED`). Token stored as SHA-256 hash;
+72-hour expiry (proposed). `status` is what `DELETE /admin/merchants/invitations/{id}`
+(revoke) and the resend endpoint actually change — `accepted_at` alone can't
+represent "revoked."
 
 ### `kyc_document`
 `merchant_id`, `doc_type`, `storage_key`, `checksum`, `status`, `reviewed_by`,
@@ -71,7 +79,9 @@ for the role list and the permissions they carry.
 "active sessions" in settings.
 
 ### `outlet`
-`merchant_id`, `name`, `address`, `code`, `status`.
+`merchant_id`, `name`, `address`, `code`, `status` (`ACTIVE`, `ARCHIVED` — archiving
+is blocked while the outlet has active VAs, per
+[API design](../api/api-design.md)).
 
 ### `virtual_account`
 Mirror of core VA state.
@@ -95,7 +105,9 @@ snapshot table.
 ### `order`
 Dynamic VA requests. `merchant_id`, `virtual_account_id`, `core_order_id` (unique),
 `amount`, `amount_type` (`A`, `E`, `L`, `G`), `validity_minutes`, `description`,
-`status`, `request_id`.
+`status`, `request_id`, `core_synced_at` (same meaning as on `virtual_account` and
+`va_transaction` — order status is also a core mirror, per
+[persistence decision](persistence-decision.md)).
 
 ### `va_transaction`
 The transaction mirror.
