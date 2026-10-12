@@ -35,6 +35,10 @@ countries, so it is built to the bank's security bar, not a startup's.
   need two different bank users. The approver cannot be the maker (enforced in service
   and by DB check). Backed by the `approval_request` table — see
   [data model](../architecture/data-model.md#approval_request).
+- **VA requests and linked (domiciliary) accounts specifically**: the checker is a
+  bank admin (not a separate approver tier for these two), and the expected turnaround
+  is immediate — no multi-day queue to design for (confirmed — see
+  [decisions](../process/open-questions.md#product-decisions)).
 - **Merchant deactivation** blocks all VAs in core and revokes all merchant sessions.
 
 ## Core integration
@@ -75,8 +79,8 @@ policy — treat it as a gap to close, not a finished design.
 - KYC files in private object storage, served only via 5-minute signed URLs,
   virus-scanned on upload, type and size checked (PDF, JPG, PNG; max 10 MB).
 - Data protection laws apply per country (for example Nigeria's Data Protection Act
-  2023). Retention periods follow the bank's policy —
-  [open question 5](../process/open-questions.md).
+  2023). Retention is **7 years** for transactions and the activity log — confirmed,
+  see [decisions](../process/open-questions.md#product-decisions).
 
 ## Web and API hardening
 

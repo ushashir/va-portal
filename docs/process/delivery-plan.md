@@ -27,9 +27,8 @@ provisional until those two are resolved.
 
 Sprint 3 (the MVP target) is otherwise unblocked by core gaps — everything it reads
 comes from the portal's own `daily_aggregate` and `va_transaction` tables, not live
-core calls. The one exception is the pool account balance, which
-[open question 1](open-questions.md) leaves unresolved; the pool account card ships
-without a balance figure if that question isn't answered in time.
+core calls. The pool account card ships without a balance figure — confirmed, not
+just a core-API gap; see [decisions](open-questions.md#product-decisions).
 
 Sprint 6 depends on the merchant/service-provider API gap — if Ecobank doesn't expose
 create/update/deactivate-merchant by then, provisioning and lifecycle screens stay

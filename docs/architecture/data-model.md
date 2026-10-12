@@ -89,8 +89,8 @@ Mirror of core VA state.
 ### `va_outlet_history`
 `virtual_account_id`, `outlet_id`, `from_at`, `to_at`, `changed_by`. Lets past
 transactions stay attached to the outlet they happened under even after the VA moves —
-see [open question 2](../process/open-questions.md), which this spec answers
-provisionally as "yes, via this snapshot table."
+confirmed (see [decisions](../process/open-questions.md#product-decisions)), via this
+snapshot table.
 
 ### `order`
 Dynamic VA requests. `merchant_id`, `virtual_account_id`, `core_order_id` (unique),
@@ -117,6 +117,9 @@ Unique constraint on (`va_number`, `transaction_ref_no`) — this is what makes 
 retries and reconciliation idempotent (upsert, never duplicate). Indexes on
 (`merchant_id`, `transaction_at`), (`virtual_account_id`, `transaction_at`), and
 (`merchant_id`, `status`).
+
+**Retention: 7 years** (confirmed, same as `activity_log` — see
+[decisions](../process/open-questions.md#product-decisions)).
 
 **Status mapping:** the mapping between core transaction statuses
 (`TRANS_IN_PROGRESS`, `TRANS_COMPLETED`, and others not yet documented — see

@@ -7,7 +7,7 @@ core. **One `requestId` ties all three together.**
 | Record | Where | Contents | Retention | Who reads it |
 |---|---|---|---|---|
 | Application log | stdout as JSON (Logback + logstash encoder) to ELK / Loki (proposed) | Level, logger, message, `requestId`, `userId`, `merchantId`, latency; PII masked | 30 days hot, 1 year archive | Engineers, support |
-| Activity log | `activity_log` table, append-only | Who did what to which entity, before/after, IP, user agent | 7 years or bank policy | Merchant admins (own), bank users (all) |
+| Activity log | `activity_log` table, append-only | Who did what to which entity, before/after, IP, user agent | 7 years (confirmed) | Merchant admins (own), bank users (all) |
 | Integration log | `integration_log` table, partitioned monthly | Every core call and webhook: endpoint, `requestId`, status, core code, latency, masked bodies | 90 days, then archive | Bank super admin, support |
 
 ## Activity log

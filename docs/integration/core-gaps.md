@@ -10,7 +10,7 @@ the corresponding questions are consolidated in
 | Create / update / deactivate merchant (service provider) API | Self-serve onboarding and admin deactivate | Portal runs the workflow; Ecobank ops provisions manually and admin enters `serviceProviderId` |
 | Get merchant (service provider) details | Show settlement account, status, amount rules | Store what was submitted at onboarding |
 | Create new VA on demand (static or dynamic) for a merchant | "Generate virtual account" button | Use create-order for dynamic; static only from the pre-allocated pool via assign-static |
-| Pool / settlement account details, name enquiry, balance | Pool account card, domiciliary name check | Show stored details; no balance ([open question 1](../process/open-questions.md)) |
+| Pool / settlement account details, name enquiry, balance | Pool account card, domiciliary name check | Show stored details; no balance (decided — see [decisions](../process/open-questions.md#product-decisions) — not just a core-API gap) |
 | Pool account statement across all VAs | Union of stored VA transactions | Mirror in `virtual_account`, updated on each portal action |
 | Single VA detail (status, type, created, expiry, outlet tags) | VA list filters and detail page | Page until empty; count locally |
 | Merchant-wide transaction history, paged, filter by status | Pool account transaction table | Webhook + per-VA history into local store |
@@ -41,8 +41,13 @@ The gaps that most constrain the MVP build order (see
    portal relies on a secret path segment per affiliate plus mandatory requery before
    marking anything `SUCCESSFUL`. This is a real security gap, not just an
    inconvenience — see [security](../engineering/security.md#webhook).
-3. **Pool account balance** — directly affects whether the "pool account card" in the
-   MVP scope can show a number at all. See [open question 1](../process/open-questions.md).
-4. **UAT access to fetch-VA and transaction history** (currently private IPs) —
+3. **UAT access to fetch-VA and transaction history** (currently private IPs) —
    blocks integration testing for VA sync and reconciliation regardless of code
    readiness.
+
+Pool account balance is no longer on this list: it's decided (not a core-API
+question) that the dashboard won't show a balance regardless of what core exposes —
+see [decisions](../process/open-questions.md#product-decisions). The core gap itself
+(no balance endpoint) still stands for `virtual-account/api/v2/merchant/settlement-account`
+if it's ever needed for internal reconciliation, but it no longer blocks the pool
+account card.

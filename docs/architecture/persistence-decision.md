@@ -37,7 +37,7 @@ dashboard the product spec asks for.
 | Activity log (business audit) | Yes, append-only | Portal | Written by an aspect on every state-changing call |
 | Integration log (each core call and webhook, masked) | Yes, 90-day retention (proposed) | Portal | Written by the core client |
 | Linked domiciliary accounts and their approval | Yes | Portal until a core API exists | Portal writes |
-| Pool account balance | **No** | Core | Not exposed by any core endpoint — [open question 1](../process/open-questions.md) |
+| Pool account balance | **No** | Core | Not exposed by any core endpoint; also a confirmed product decision not to show it even if it were — see [decisions](../process/open-questions.md#product-decisions) |
 | Core OAuth token | No (memory or Redis only) | Core | Refreshed before expiry |
 | AES key, client secret, core passwords | No (secrets manager) | Ecobank | Rotated per Ecobank's process |
 

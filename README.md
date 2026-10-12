@@ -58,8 +58,8 @@ engineering spec that implementation will follow.
 ### Process
 - [Delivery plan](docs/process/delivery-plan.md) — build order and the six proposed
   two-week sprints.
-- [Open questions](docs/process/open-questions.md) — product questions and the API gaps
-  to take back to Ecobank before committing to the plan above.
+- [Decisions and open questions](docs/process/open-questions.md) — the resolved
+  product decisions, one deferred item, and the API gaps still open with Ecobank.
 
 ## How to use this doc set
 
@@ -71,6 +71,7 @@ engineering spec that implementation will follow.
   [core gaps](docs/integration/core-gaps.md) first; most of the portal's defensive
   design (reconciliation, requery, status mapping) exists because of what's in those
   two documents.
-- [Open questions](docs/process/open-questions.md) is the single most important
-  document right now — several architecture decisions (pool balance display, VA
-  outlet-history behavior, SMS billing) are provisional pending answers there.
+- [Decisions and open questions](docs/process/open-questions.md) carries the
+  resolved product decisions (pool balance, outlet history, approval SLA, retention)
+  and the 11 questions still open with Ecobank — most of the core-integration
+  defensive design exists because those 11 aren't answered yet.

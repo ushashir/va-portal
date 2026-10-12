@@ -35,12 +35,15 @@ listed at the bottom with no detail; full detail on both is in
 | M-5 | Pool account details | The pool account card has nothing to show without it |
 | M-6 | Merchant-wide transaction list | One call across all VAs instead of 22 calls per merchant per date range |
 
-## The 3 questions that matter most right now
+## The 2 questions that matter most right now
 
 1. **M-1**: will merchant creation become an API, or does it stay manual? If manual,
    what's the turnaround and how do we get `serviceProviderId` back?
-2. **M-5**: can the pool balance be exposed, and is the bank willing to show it?
-3. Which of E-1 through M-6 ship first, and by what date?
+2. Which of E-1 through M-6 ship first, and by what date?
+
+(M-5, pool balance, is no longer a product-blocking question — the dashboard won't
+show a balance regardless. It's optional now, only useful if core ever needs it for
+internal reconciliation.)
 
 (Full question list, including VA pre-allocation, retention, and UAT contacts: see
 [open questions](../process/open-questions.md).)

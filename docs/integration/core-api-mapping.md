@@ -28,8 +28,8 @@ VAS Production Integration (prod, v1).
 | 12 | Payment notification (inbound webhook) | `POST` to merchant `serviceProviderNotificationUrl` | Not documented | Yes | Real-time transaction ingest |
 
 Both UAT and prod environments currently expose #9, #10, and #11 only via internal IPs
-or partial paths — see [open question 11](../process/open-questions.md) on getting
-public UAT hosts.
+or partial paths — see the UAT-hosts question in
+[open questions for Ecobank](../process/open-questions.md#questions-for-ecobank).
 
 ## Payload inconsistencies the core client must normalize
 
@@ -53,8 +53,9 @@ portal ever sees a core quirk.
   over its own request state.
 - **Encryption is inconsistent with the spec text**: the spec states all payloads are
   AES-GCM encrypted, but every sample *except* transaction history (#11) is plain
-  JSON. See [open question 8](../process/open-questions.md) — which endpoints actually
-  require encryption is not yet confirmed; it's configured per-endpoint in the client
+  JSON. See the encryption-scope question in
+  [open questions for Ecobank](../process/open-questions.md#questions-for-ecobank) —
+  which endpoints actually require encryption is not yet confirmed; it's configured per-endpoint in the client
   until Ecobank confirms.
 
 ## Token handling
